@@ -1,3 +1,6 @@
+__author__ = "Minhaj Hussain"
+__email__ = "mah148@duke.edu"
+
 import glob
 import os
 
