@@ -3,6 +3,9 @@
 </div>
 
 ***
+
+[![DOI](https://zenodo.org/badge/829092590.svg)](https://zenodo.org/doi/10.5281/zenodo.12752386)
+
 > Icon courtesy of DALL·E 3, with prompt "A differentiable massively parallel GPU-based model of neural fiber dynamics for prediction and optimization of extracellular electrical stimulation."
 
 *Implement and train high-throughput GPU-compatible neural fiber models.*
