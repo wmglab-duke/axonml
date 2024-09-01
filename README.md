@@ -10,6 +10,11 @@
 
 *Implement and train high-throughput GPU-compatible neural fiber models.*
 
+## 📑 Citation
+Hussain, M.A., Grill, W.M., Pelot, N.A., 2024. Highly efficient modeling and optimization of neural fiber responses to electrical stimulation. Nat Commun 15, 7597. https://doi.org/10.1038/s41467-024-51709-8
+
+If you find our work useful, please cite the paper and star ⭐ the repository. Thank you!
+
 ## ❗Requirements
 
 ### Hardware requirements
