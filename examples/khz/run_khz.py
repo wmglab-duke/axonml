@@ -219,7 +219,7 @@ for frequency, n in zip(frequencies, all_n):
                 data["a_idx"].append(a_idx)
                 data["amplitude"].append(amp)
                 data["diameter"].append(d)
-                (data["# APs"].append(n_[0]),)
+                data["# APs"].append(n_[0])
                 data["method"].append("Surrogate")
             for amp, n_ in zip(amps, n_nrn):
                 data["frequency"].append(frequency)

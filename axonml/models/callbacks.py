@@ -66,9 +66,11 @@ class CallbackList:
 
 
 class Recorder(Callback):
-    def __init__(self, max_only=False):
+    def __init__(self, max_only=False, node_indices=None, state_indices=None):
         self.rec: List[Tensor] = []
         self.max_only = max_only
+        self.node_indices = node_indices
+        self.state_indices = state_indices
 
     def reset(self):
         self.rec.clear()
@@ -83,6 +85,8 @@ class Recorder(Callback):
         if self.max_only:
             self.rec.append(torch.amax(states, -1))
         else:
+            if self.node_indices is not None:
+                self.rec.append(states[:, :, :, self.node_indices])
             self.rec.append(states)
 
     def stack(self):
@@ -107,9 +111,13 @@ class ThresholdCallback(Callback):
     def reset_count(self):
         self.record = None
 
+    def reset_state_cache(self):
+        self.state_cache = None
+
     def reset(self):
         self.reset_timer()
         self.reset_count()
+        self.reset_state_cache()
 
     def numpy(self):
         if self.record is not None:
@@ -131,8 +139,9 @@ class APCount(ThresholdCallback):
                 dtype=torch.int16,
                 device=states.device,
             )
-        self.state_cache = torch.ones(states.shape[0], len(self.node_check),
-                                      dtype=torch.bool, device=states.device)
+        if self.state_cache is None:
+            self.state_cache = torch.ones(states.shape[0], len(self.node_check),
+                                          dtype=torch.bool, device=states.device)
 
     def post_step_hook(self, states):
         if self.i * self.dt >= self.t_start_check:
@@ -168,8 +177,9 @@ class Active(ThresholdCallback):
             self.record = torch.zeros(
                 states.shape[0], dtype=torch.bool, device=states.device
             )
-        self.state_cache = torch.ones(states.shape[0], len(self.node_check),
-                                      dtype=torch.bool, device=states.device)
+        if self.state_cache is None:
+            self.state_cache = torch.ones(states.shape[0], len(self.node_check),
+                                        dtype=torch.bool, device=states.device)
 
     def post_step_hook(self, states):
         if self.i * self.dt >= self.t_start_check:
@@ -196,8 +206,9 @@ class Raster(ThresholdCallback):
     def pre_loop_hook(self, states):
         if self.record is None:
             self.record = []
-        self.state_cache = torch.ones(states.shape[0], len(self.node_check),
-                                      dtype=torch.bool, device=states.device)
+        if self.state_cache is None:
+            self.state_cache = torch.ones(states.shape[0], len(self.node_check),
+                                        dtype=torch.bool, device=states.device)
 
     def post_step_hook(self, states):
         if self.i * self.dt >= self.t_start_check:

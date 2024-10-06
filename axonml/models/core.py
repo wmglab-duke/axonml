@@ -56,6 +56,7 @@ class Axon(jit.ScriptModule):
             p.requires_grad = False
 
         self.state = torch.tensor(0)
+        self._state_cache = torch.tensor(0)
 
         # -- constants --
         self.pi = torch.nn.Parameter(torch.tensor(math.pi, requires_grad=False))
@@ -153,7 +154,7 @@ class Axon(jit.ScriptModule):
                 ).reshape(1, 2, 3)
 
             elif name in self.__class__.params:
-                for pname, pval in self.__class__.params[name]:
+                for pname, pval in self.__class__.params[name].items():
                     p = getattr(self, pname)
                     p.data = torch.tensor(pval, device=p.device)
 
@@ -429,3 +430,9 @@ class Axon(jit.ScriptModule):
             state_dict = torch.load(state_dict, map_location=self.device())
         self.load_state_dict(state_dict)
         return self
+    
+    def cache_state(self):
+        self._state_cache = self.state.detach().clone()
+
+    def restore_state(self):
+        self.state = self._state_cache
