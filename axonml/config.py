@@ -3,11 +3,11 @@ from typing import List
 
 import torch
 
-from axonml.models import Backend as A, Axon, MRG
+from axonml.models import Backend as A, Axon, SMF
 
 
 # model specification
-model: Axon = MRG
+model: Axon = SMF
 cuda = torch.cuda.is_available()
 fp32 = False
 nodes = 53
