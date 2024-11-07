@@ -42,7 +42,7 @@ class DataLoader:
 
         for i in idxs:
             if self.diameters is not None:
-                diams = self.diameters[i, ...]
+                diams_ = self.diameters[i, ...]
 
             dynamics = []
 
@@ -69,7 +69,7 @@ class DataLoader:
 
             for j in range(n_chunks):
                 if self.diameters is not None:
-                    diameters_chunk = diams[j * chunk_size : (j + 1) * chunk_size]
+                    diameters_chunk = diams_[j * chunk_size : (j + 1) * chunk_size]
 
                 # -- get dynamics data --
                 dynamics_chunks = []
