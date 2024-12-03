@@ -10,6 +10,7 @@ Author: Minhaj Hussain
 import argparse
 
 import numpy as np
+from scipy.interpolate import interp1d
 
 from cajal.mpi import NeuronModel, RNG
 from cajal.common.logging import logger, DisableLogger
@@ -49,13 +50,32 @@ parser.add_argument("--max_delay", type=float, default=config.max_delay)
 args = parser.parse_args()
 
 
+def load_field(fname):
+    arr = np.load(fname)
+    if arr.ndim != 2:
+        raise ValueError(f"Expected 2D array, got {arr.ndim}D")
+    
+    for i in range(arr.shape[0]):
+        valid_indices = ~np.isnan(arr[i])
+        nan_indices = np.isnan(arr[i])
+
+        if np.any(nan_indices):
+            if np.any(valid_indices):
+                interp_func = interp1d(np.where(valid_indices)[0], arr[i][valid_indices])
+                arr[i][nan_indices] = interp_func(np.where(nan_indices)[0])
+            else:
+                raise ValueError("All values are NaN")
+    
+    return arr
+
+
 N.tstop = config.tstop
 
 N_NODE_RECORD = config.n_node_record
 N_CONTACTS = config.n_contacts
 
-DATA_0 = [np.load(f"./fields/P/{i}.npy") for i in range(N_CONTACTS)]
-DATA_1 = [np.load(f"./fields/H/{i}.npy") for i in range(N_CONTACTS)]
+DATA_0 = [load_field(f"./fields/P/{i}.npy") for i in range(N_CONTACTS)]
+DATA_1 = [load_field(f"./fields/H/{i}.npy") for i in range(N_CONTACTS)]
 DATA_ALL = [np.vstack([x, y]) for x, y in zip(DATA_0, DATA_1)]
 
 fiber_zs = np.load("./fields/H/fiber_z.npy")
